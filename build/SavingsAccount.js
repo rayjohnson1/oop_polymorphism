@@ -54,12 +54,12 @@ function (_Account) {
     value: function withdraw(amount) {
       if (this._currentMonthlyWithdrawls === this._maxMonthlyWithdrawals) {
         console.log("Max monthly withdrawal limit has been reached, Please wait until next month.");
-        return;
+        return false;
       }
 
       if (amount > this._balance) {
         console.log("Insufficient funds!");
-        return;
+        return false;
       }
 
       this._balance -= amount;

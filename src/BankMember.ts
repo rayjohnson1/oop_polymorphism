@@ -1,6 +1,10 @@
 //BankMember.ts
+import Account from './Account.abstract';
 import SavingsAccount from './SavingsAccount';
 import CheckingAccount from './CheckingAccount';
+import MiscAccount from './MiscAccount'
+
+type AccountsHash = { [AccountId: number]: Account };
 
 export default class BankMember {
 
@@ -9,6 +13,7 @@ export default class BankMember {
 
     private _savingsAccount: SavingsAccount;
     private _checkingAccount: CheckingAccount;
+    private _accountsHash: AccountsHash;
     
     public get memberId() : number {
         return this._memberId;
@@ -18,27 +23,50 @@ export default class BankMember {
         return this._name;
     }
 
+    public get savingsAccount(): SavingsAccount{
+        return this._savingsAccount;
+    }
+
+    public get checkingAccount(): CheckingAccount{
+        return this._checkingAccount;
+    }
+
+    public get accountsHash(): AccountsHash{
+        return this._accountsHash;
+    }
+
     constructor(name: string){
         this._name = name;
         this._memberId = this.generateId();
+        this._accountsHash = {};
     }
 
-    public createSavingsAccount(startingBalance: number): void{
+    public createSavingsAccount(startingBalance: number): SavingsAccount{
         if(this._savingsAccount !== undefined){
             console.log(`${this._name} already owns a savings account.`);
             return;
         }
 
         this._savingsAccount = new SavingsAccount(this._memberId, startingBalance);
+        this._accountsHash[this._savingsAccount.id] = this._savingsAccount;
+        return this._savingsAccount;
     }
 
-    public createCheckingAccount(startingBalance: number): void{
+    public createCheckingAccount(startingBalance: number): CheckingAccount{
         if(this._checkingAccount !== undefined){
             console.log(`${this._name} already owns a checking account.`);
             return;
         }
 
         this._checkingAccount = new CheckingAccount(this._memberId, startingBalance);
+        this._accountsHash[this._checkingAccount.id] = this._checkingAccount;
+        return this._checkingAccount;
+    }
+
+    public createMiscAccount(name: string, startingBalance: number): MiscAccount{
+        const newAccount = new MiscAccount(name, this._memberId, startingBalance);
+        this._accountsHash[newAccount.id] = newAccount;
+        return newAccount;
     }
 
     public depositToSavings(amount: number): void{
@@ -49,10 +77,6 @@ export default class BankMember {
         this._savingsAccount.withdraw(amount);
     }
 
-    public getSavingsBalance(): number{
-        return this._savingsAccount.balance;
-    }
-
     public depositToChecking(amount: number): void{
         this._checkingAccount.deposit(amount);
     }
@@ -61,8 +85,25 @@ export default class BankMember {
         this._checkingAccount.withdraw(amount);
     }
 
+    public getSavingsBalance(): number{
+        return this._savingsAccount.balance;
+    }
+
     public getCheckingBalance(): number{
         return this._checkingAccount.balance;
+    }
+
+    public getMiscAccountBalance(accountId: number): number {
+        return this._accountsHash[accountId].balance;
+    }
+
+    public transferFunds(amount: number, fromId: number, toId: number){
+        
+        const from: Account = this._accountsHash[fromId];
+        const to: Account = this._accountsHash[toId];
+
+        from.transferFunds(amount, to);
+
     }
 
     private generateId(): number{

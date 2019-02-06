@@ -18,16 +18,16 @@ export default class SavingsAccount extends Account {
         this._balance += (this._balance * (this._percentInterestGrowth / 100));
     }
 
-    public withdraw(amount: number): void{
+    public withdraw(amount: number): void | false{
 
         if(this._currentMonthlyWithdrawls === this._maxMonthlyWithdrawals){
             console.log(`Max monthly withdrawal limit has been reached, Please wait until next month.`);
-            return;
+            return false;
         }
 
         if(amount > this._balance){
             console.log(`Insufficient funds!`);
-            return;
+            return false;
         }
 
         this._balance -= amount;

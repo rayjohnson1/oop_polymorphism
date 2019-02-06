@@ -11,18 +11,19 @@ export default class CheckingAccount extends Account{
         this._maxWithdrawalAmount = 250;
     }
 
-    public withdraw(amount: number): void{
+    public withdraw(amount: number): void | false{
         
         if(amount > this._maxWithdrawalAmount){
             console.log(`You can not withdraw more than ${this._maxWithdrawalAmount} at a time!`);
-            return;
+            return false;
         }
         if(amount > this._balance){
             console.log("Insufficient Funds!");
-            return;
+            return false;
         }
 
         this._balance -= amount;
         
     }
+
 }

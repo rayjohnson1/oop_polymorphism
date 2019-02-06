@@ -9,6 +9,8 @@ var _SavingsAccount = _interopRequireDefault(require("./SavingsAccount"));
 
 var _CheckingAccount = _interopRequireDefault(require("./CheckingAccount"));
 
+var _MiscAccount = _interopRequireDefault(require("./MiscAccount"));
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -30,6 +32,21 @@ function () {
     get: function get() {
       return this._name;
     }
+  }, {
+    key: "savingsAccount",
+    get: function get() {
+      return this._savingsAccount;
+    }
+  }, {
+    key: "checkingAccount",
+    get: function get() {
+      return this._checkingAccount;
+    }
+  }, {
+    key: "accountsHash",
+    get: function get() {
+      return this._accountsHash;
+    }
   }]);
 
   function BankMember(name) {
@@ -37,6 +54,7 @@ function () {
 
     this._name = name;
     this._memberId = this.generateId();
+    this._accountsHash = {};
   }
 
   _createClass(BankMember, [{
@@ -48,6 +66,8 @@ function () {
       }
 
       this._savingsAccount = new _SavingsAccount.default(this._memberId, startingBalance);
+      this._accountsHash[this._savingsAccount.id] = this._savingsAccount;
+      return this._savingsAccount;
     }
   }, {
     key: "createCheckingAccount",
@@ -58,6 +78,15 @@ function () {
       }
 
       this._checkingAccount = new _CheckingAccount.default(this._memberId, startingBalance);
+      this._accountsHash[this._checkingAccount.id] = this._checkingAccount;
+      return this._checkingAccount;
+    }
+  }, {
+    key: "createMiscAccount",
+    value: function createMiscAccount(name, startingBalance) {
+      var newAccount = new _MiscAccount.default(name, this._memberId, startingBalance);
+      this._accountsHash[newAccount.id] = newAccount;
+      return newAccount;
     }
   }, {
     key: "depositToSavings",
@@ -70,11 +99,6 @@ function () {
       this._savingsAccount.withdraw(amount);
     }
   }, {
-    key: "getSavingsBalance",
-    value: function getSavingsBalance() {
-      return this._savingsAccount.balance;
-    }
-  }, {
     key: "depositToChecking",
     value: function depositToChecking(amount) {
       this._checkingAccount.deposit(amount);
@@ -85,9 +109,26 @@ function () {
       this._checkingAccount.withdraw(amount);
     }
   }, {
+    key: "getSavingsBalance",
+    value: function getSavingsBalance() {
+      return this._savingsAccount.balance;
+    }
+  }, {
     key: "getCheckingBalance",
     value: function getCheckingBalance() {
       return this._checkingAccount.balance;
+    }
+  }, {
+    key: "getMiscAccountBalance",
+    value: function getMiscAccountBalance(accountId) {
+      return this._accountsHash[accountId].balance;
+    }
+  }, {
+    key: "transferFunds",
+    value: function transferFunds(amount, fromId, toId) {
+      var from = this._accountsHash[fromId];
+      var to = this._accountsHash[toId];
+      from.transferFunds(amount, to);
     }
   }, {
     key: "generateId",
