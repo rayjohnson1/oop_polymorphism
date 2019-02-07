@@ -1,3 +1,4 @@
+//MiscAccount.ts
 import Account from "./Account.abstract";
 
 export default class MiscAccount extends Account{
